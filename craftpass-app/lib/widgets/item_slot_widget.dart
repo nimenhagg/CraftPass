@@ -74,7 +74,7 @@ class ItemSlotWidget extends StatelessWidget {
                       child: Container(
                         height: 3,
                         decoration: BoxDecoration(
-                          color: Colors.black50,
+                          color: Colors.black54,
                           borderRadius: BorderRadius.circular(1),
                         ),
                         child: FractionallySizedBox(
