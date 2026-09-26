@@ -59,6 +59,12 @@ jobs:
         channel: 'stable'
         cache: true
 
+    - name: Scaffold Flutter Android Platform Files
+      working-directory: craftpass-app
+      run: |
+        flutter create . --org com.craftpass --project-name craftpass_app --platforms=android
+        sed -i 's/<application/<uses-permission android:name="android.permission.INTERNET"\/>\n    <application/' android/app/src/main/AndroidManifest.xml
+
     - name: Get Flutter dependencies
       working-directory: craftpass-app
       run: flutter pub get
