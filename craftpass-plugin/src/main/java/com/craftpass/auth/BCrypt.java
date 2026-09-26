@@ -152,7 +152,7 @@ private static final int[] S_orig = {
 
     private static final int[] bf_crypt_ciphertext = {
         0x4f727068, 0x65616e42, 0x65686f6c,
-        0x64657253, 0x63727970, 0x74686173
+        0x64657253, 0x63727944, 0x6f756274
     };
 
     private static final char[] base64_code = {

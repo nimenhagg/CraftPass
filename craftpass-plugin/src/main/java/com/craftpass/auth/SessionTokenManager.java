@@ -38,13 +38,36 @@ public class SessionTokenManager {
         long lockedUntil = 0;
     }
 
+    private int sessionTtlMinutes = 120;
+    private int maxFailedAttempts = 5;
+    private int lockoutMinutes = 10;
+
     public SessionTokenManager(PluginConfig config) {
         this.config = config;
     }
 
+    public SessionTokenManager(int sessionTtlMinutes, int maxFailedAttempts, int lockoutMinutes) {
+        this.config = null;
+        this.sessionTtlMinutes = sessionTtlMinutes;
+        this.maxFailedAttempts = maxFailedAttempts;
+        this.lockoutMinutes = lockoutMinutes;
+    }
+
+    private int getSessionTtl() {
+        return config != null ? config.getSessionTtlMinutes() : sessionTtlMinutes;
+    }
+
+    private int getMaxFailed() {
+        return config != null ? config.getMaxFailedAttempts() : maxFailedAttempts;
+    }
+
+    private int getLockoutMin() {
+        return config != null ? config.getLockoutMinutes() : lockoutMinutes;
+    }
+
     public Session createSession(String username, UUID uuid) {
         String token = UUID.randomUUID().toString().replace("-", "") + UUID.randomUUID().toString().replace("-", "");
-        long expiresAt = System.currentTimeMillis() + (config.getSessionTtlMinutes() * 60L * 1000L);
+        long expiresAt = System.currentTimeMillis() + (getSessionTtl() * 60L * 1000L);
         Session session = new Session(username, uuid, token, expiresAt);
         activeSessions.put(token, session);
         cleanExpiredSessions();
@@ -86,8 +109,8 @@ public class SessionTokenManager {
     public void recordFailedAttempt(String ip) {
         IpAttemptRecord rec = ipAttempts.computeIfAbsent(ip, k -> new IpAttemptRecord());
         rec.failedAttempts++;
-        if (rec.failedAttempts >= config.getMaxFailedAttempts()) {
-            rec.lockedUntil = System.currentTimeMillis() + (config.getLockoutMinutes() * 60L * 1000L);
+        if (rec.failedAttempts >= getMaxFailed()) {
+            rec.lockedUntil = System.currentTimeMillis() + (getLockoutMin() * 60L * 1000L);
         }
     }
 
@@ -95,8 +118,17 @@ public class SessionTokenManager {
         ipAttempts.remove(ip);
     }
 
+    public boolean resetLockout(String ip) {
+        IpAttemptRecord removed = ipAttempts.remove(ip);
+        return removed != null && removed.lockedUntil > System.currentTimeMillis();
+    }
+
     public void clearAllLocks() {
         ipAttempts.clear();
+    }
+
+    public void resetAllLockouts() {
+        clearAllLocks();
     }
 
     public Map<String, Long> getActiveLocks() {
@@ -108,6 +140,10 @@ public class SessionTokenManager {
             }
         }
         return active;
+    }
+
+    public Map<String, Long> getActiveLockouts() {
+        return getActiveLocks();
     }
 
     private void cleanExpiredSessions() {
