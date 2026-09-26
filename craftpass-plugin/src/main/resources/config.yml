@@ -1,0 +1,48 @@
+# ===================================================================
+# CraftPass - Non-HTTP High-Security Account & Inventory Bridge
+# Repository: https://github.com/nimenhagg/CraftPass
+# License: GNU General Public License v3.0 (GPLv3)
+# ===================================================================
+
+# Network TCP Socket Configuration
+# Note: Raw TCP protocol bypasses Web/HTTP ICP filing requirements completely.
+tcp:
+  bind-address: '0.0.0.0'
+  port: 25566
+  max-connections-per-ip: 5
+  connection-timeout-seconds: 30
+
+# Cryptographic & Public-Database Defense Configuration
+security:
+  # Server-side Pepper: Crucial cryptographic secret to protect against offline
+  # GPU brute-force attacks if the database (LoginSecurity.db) is made public.
+  # This secret is stored ONLY in this configuration and NEVER in the database.
+  # If left as AUTO_GENERATE, CraftPass will generate a 256-bit secure key on first startup.
+  server-pepper: 'AUTO_GENERATE'
+  
+  # Session Token Lifetime in minutes
+  session-token-ttl-minutes: 120
+  
+  # Authentication Challenge Nonce TTL in seconds (single-use)
+  nonce-ttl-seconds: 60
+  
+  # Anti-Brute-Force Lockout
+  max-failed-attempts: 5
+  lockout-minutes: 10
+
+# Geyser & Bedrock Dual-Identity Linking
+geyser-linking:
+  enabled: true
+  # Floodgate Bedrock username prefix (default is '.')
+  bedrock-prefix: '.'
+  # Enforce mutex online state (cannot login to both Java and Bedrock simultaneously)
+  prevent-concurrent-login: true
+  # Seamlessly mirror inventory, ender chest, and XP upon player quit
+  sync-inventory-on-quit: true
+
+# Enabled Modules
+features:
+  inventory-view: true
+  change-password: true
+  account-migration: true
+  geyser-linking: true

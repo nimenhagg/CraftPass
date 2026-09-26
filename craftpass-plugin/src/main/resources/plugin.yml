@@ -1,0 +1,23 @@
+name: CraftPass
+version: '1.0.0'
+main: com.craftpass.CraftPassPlugin
+api-version: '1.16'
+author: nimenhagg
+description: High-security Non-HTTP TCP Bridge for Minecraft Account Management, Inventory Inspection, and Geyser Linking.
+softdepend:
+  - LoginSecurity
+  - Multiverse-Core
+  - Multiverse-Inventories
+  - Slimefun
+  - CoreProtect
+  - Geyser-Spigot
+  - floodgate
+commands:
+  craftpass:
+    description: CraftPass server administration command
+    permission: craftpass.admin
+    usage: /craftpass [reload|status|token|link]
+permissions:
+  craftpass.admin:
+    description: Allows administration of CraftPass
+    default: op

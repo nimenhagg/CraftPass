@@ -1,0 +1,107 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ "main" ]
+    tags:
+      - "v*"
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-plugin:
+    name: Build Minecraft Plugin (Paper/Spigot)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build Plugin with Maven
+      working-directory: craftpass-plugin
+      run: mvn clean package --batch-mode
+
+    - name: Upload Plugin JAR Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: CraftPass-Plugin-JAR
+        path: craftpass-plugin/target/*.jar
+        if-no-files-found: error
+
+  build-app:
+    name: Build Flutter Client App (Android APK)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        cache: true
+
+    - name: Get Flutter dependencies
+      working-directory: craftpass-app
+      run: flutter pub get
+
+    - name: Build Android APK
+      working-directory: craftpass-app
+      run: flutter build apk --release
+
+    - name: Rename APK for Release
+      run: |
+        mkdir -p release-assets
+        cp craftpass-app/build/app/outputs/flutter-apk/app-release.apk release-assets/CraftPass-v1.0.0.apk
+
+    - name: Upload Android APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: CraftPass-Android-APK
+        path: release-assets/CraftPass-v1.0.0.apk
+        if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release
+    needs: [build-plugin, build-app]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download Plugin Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: CraftPass-Plugin-JAR
+        path: release-dist
+
+    - name: Download App Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: CraftPass-Android-APK
+        path: release-dist
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: release-dist/*
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
