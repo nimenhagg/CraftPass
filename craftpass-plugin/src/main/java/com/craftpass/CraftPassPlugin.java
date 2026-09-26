@@ -75,7 +75,43 @@ public class CraftPassPlugin extends JavaPlugin implements CommandExecutor {
                 return true;
             }
             pluginConfig.reload();
-            sender.sendMessage("§a[CraftPass] 配置文件已重载！");
+            sessionTokenManager.clearAllLocks();
+            sender.sendMessage("§a[CraftPass] 配置文件已重载，所有防爆破临时 IP 锁定已清空！");
+            return true;
+        }
+
+        if (args.length > 0 && (args[0].equalsIgnoreCase("unban") || args[0].equalsIgnoreCase("unlock"))) {
+            if (!sender.hasPermission("craftpass.admin")) {
+                sender.sendMessage("§c权限不足！");
+                return true;
+            }
+            if (args.length < 2) {
+                sender.sendMessage("§c用法: /craftpass unban <目标IP | all>");
+                return true;
+            }
+            String target = args[1].trim();
+            if ("all".equalsIgnoreCase(target)) {
+                sessionTokenManager.clearAllLocks();
+                sender.sendMessage("§a[CraftPass] 已清空所有 App 接口的防爆破 IP 锁定！");
+                return true;
+            }
+            sessionTokenManager.resetFailedAttempts(target);
+            sender.sendMessage("§a[CraftPass] 已解除 IP §e" + target + "§a 的锁定状态！");
+            return true;
+        }
+
+        if (args.length > 0 && (args[0].equalsIgnoreCase("lockouts") || args[0].equalsIgnoreCase("locks"))) {
+            if (!sender.hasPermission("craftpass.admin")) {
+                sender.sendMessage("§c权限不足！");
+                return true;
+            }
+            java.util.Map<String, Long> active = sessionTokenManager.getActiveLocks();
+            if (active.isEmpty()) {
+                sender.sendMessage("§a[CraftPass] 当前没有被锁定的 IP。");
+            } else {
+                sender.sendMessage("§6=== CraftPass 当前锁定的 IP (" + active.size() + " 个) ===");
+                active.forEach((ip, sec) -> sender.sendMessage("§eIP: §f" + ip + " §7(剩余 §c" + sec + " §7秒)"));
+            }
             return true;
         }
 
@@ -87,7 +123,7 @@ public class CraftPassPlugin extends JavaPlugin implements CommandExecutor {
             return true;
         }
 
-        sender.sendMessage("§6[CraftPass] §f使用: /craftpass [reload|status]");
+        sender.sendMessage("§6[CraftPass] §f使用: /craftpass [reload|status|unban <ip|all>|lockouts]");
         return true;
     }
 
