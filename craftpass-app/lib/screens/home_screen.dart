@@ -81,7 +81,7 @@ class _DashboardTab extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
-        title: const Text('CraftPass 角色中枢', style: TextStyle(color: AppColors.textMain, fontSize: 17, fontWeight: FontWeight.bold)),
+        title: const Text('CraftPass', style: TextStyle(color: AppColors.textMain, fontSize: 17, fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: AppColors.redstone),

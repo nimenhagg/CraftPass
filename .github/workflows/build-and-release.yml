@@ -62,8 +62,12 @@ jobs:
     - name: Scaffold Flutter Android Platform Files
       working-directory: craftpass-app
       run: |
-        flutter create . --org com.craftpass --project-name craftpass_app --platforms=android
+        flutter create . --org com.craftpass --project-name craftpass --platforms=android
+        sed -i 's/android:label="[^"]*"/android:label="CraftPass"/g' android/app/src/main/AndroidManifest.xml
         sed -i 's/<application/<uses-permission android:name="android.permission.INTERNET"\/>\n    <application/' android/app/src/main/AndroidManifest.xml
+        if [ -f android/app/src/main/res/values/strings.xml ]; then
+          sed -i 's/<string name="app_name">.*<\/string>/<string name="app_name">CraftPass<\/string>/g' android/app/src/main/res/values/strings.xml
+        fi
 
     - name: Get Flutter dependencies
       working-directory: craftpass-app

@@ -1,4 +1,4 @@
-name: craftpass_app
+name: craftpass
 description: "CraftPass - Non-HTTP Secure Minecraft Account & Inventory Companion App"
 publish_to: 'none'
 version: 1.0.0+1

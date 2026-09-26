@@ -1,4 +1,4 @@
-# CraftPass (方块通行证)
+# CraftPass
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Build and Release](https://github.com/nimenhagg/CraftPass/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/nimenhagg/CraftPass/actions/workflows/build-and-release.yml)
