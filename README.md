@@ -88,8 +88,27 @@ CraftPass 插件采用无 NMS 绑定的纯 Java 原生 NBT 引擎与 Spigot/Pape
 4. 确保服务器防火墙开放 TCP 端口（默认 `25566`）。
 
 ### 2. 客户端使用
-1. 在 [Releases](https://github.com/nimenhagg/CraftPass/releases) 下载 Android APK（`CraftPass-v1.0.0.apk`）或桌面客户端；
+1. 在 [Releases](https://github.com/nimenhagg/CraftPass/releases) 下载 Android APK（`CraftPass-v1.0.2.apk`）或桌面客户端；
 2. 输入服务器 IP、TCP 端口、游戏角色用户名和当前登录密码，点击「安全连接并登录」即可！
+
+---
+
+## 🛡️ 管理员指令与 IP 解封机制 (Commands & IP Unban)
+
+当玩家多次输错密码触发防暴力破解锁定（默认连续输错 5 次锁定 10 分钟）时，管理员可通过以下指令实时查询与一键手动解封：
+
+| 指令 | 权限 | 说明 |
+|---|---|---|
+| `/craftpass unban <IP>` | `craftpass.admin` | 立即解封指定的被锁定 IP 地址 |
+| `/craftpass unban all` | `craftpass.admin` | 一键立即清空所有被锁定的 IP 限制 |
+| `/craftpass lockouts` | `craftpass.admin` | 列出当前所有被锁定的 IP 及剩余解封倒计时 |
+| `/craftpass reload` | `craftpass.admin` | 重载配置文件并立刻清空所有 IP 锁定 |
+| `/craftpass status` | `craftpass.admin` | 查看 TCP 服务端口、活跃连接数与安全防护状态 |
+
+> **提示**：如果使用的是配套的账号数据迁移插件（`PaperAccountMigration`），同样支持：
+> * `/migrationadmin unban <IP|all>` - 手动解封被锁定的迁移 IP
+> * `/migrationadmin lockouts` - 查看当前迁移锁定的 IP 列表
+> * `/migrationadmin reload` - 重载并立即清空所有防爆破临时锁定
 
 ---
 
