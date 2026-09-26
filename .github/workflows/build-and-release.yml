@@ -80,13 +80,17 @@ jobs:
     - name: Rename APK for Release
       run: |
         mkdir -p release-assets
-        cp craftpass-app/build/app/outputs/flutter-apk/app-release.apk release-assets/CraftPass-v1.0.0.apk
+        TAG_NAME="${{ github.ref_name }}"
+        if [ -z "$TAG_NAME" ] || [ "$TAG_NAME" = "main" ]; then
+          TAG_NAME="v1.0.1"
+        fi
+        cp craftpass-app/build/app/outputs/flutter-apk/app-release.apk release-assets/CraftPass-${TAG_NAME}.apk
 
     - name: Upload Android APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: CraftPass-Android-APK
-        path: release-assets/CraftPass-v1.0.0.apk
+        path: release-assets/*.apk
         if-no-files-found: error
 
   release:
